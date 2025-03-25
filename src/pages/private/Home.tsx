@@ -25,6 +25,7 @@ import {
 import { Command, CommandItem } from '../../components/ui/command';
 import { SalesBarChart, SalesData } from '../../components/sales-bar-chart';
 import { OrdersBarChart } from '../../components/orders-bar-chart';
+import { useSearchParams } from 'react-router-dom';
 
 const COLORS = [
   '#1f77b4',
@@ -51,7 +52,6 @@ const COLORS = [
 
 export function Home() {
   const api = useApi();
-
   const [salesData, setSalesData] = useState<SalesData[]>([]);
   const [orderData, setOrdersData] = useState<SalesData[]>([]);
   const [salesCities, setSalesCities] = useState<string[]>([]);
@@ -63,18 +63,24 @@ export function Home() {
 
   const startYear = 2003;
   const endYear = 2005;
-
   const years = Array.from({ length: endYear - startYear + 1 }, (_, i) =>
     DateTime.fromObject({ year: startYear + i }),
   ).reverse();
 
-  const [temporalRange, setTemporalRange] = useState<DateTime[]>([
-    years[0].startOf('year'),
-    years[0].endOf('year'),
-  ]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialDateRange = JSON.parse(searchParams.get('dateRange') || '[]');
+  const [temporalRange, setTemporalRange] = useState<DateTime[]>(
+    initialDateRange.length
+      ? initialDateRange
+      : [years[0].startOf('year'), years[0].endOf('year')],
+  );
 
-  const [citiesFilter, setCitiesFilter] = useState<string[]>([]);
-  const [countriesFilter, setCountriesFilter] = useState<string[]>([]);
+  const [citiesFilter, setCitiesFilter] = useState<string[]>(
+    JSON.parse(searchParams.get('cities') || '[]'),
+  );
+  const [countriesFilter, setCountriesFilter] = useState<string[]>(
+    JSON.parse(searchParams.get('countries') || '[]'),
+  );
 
   const getData = useCallback(async () => {
     setLoading(true);
@@ -563,12 +569,10 @@ export function Home() {
         result_format: 'json',
         result_type: 'full',
       });
-
       setOrdersData(orderResponse.result[0].data);
       setOrdersCities(orderResponse.result[0].colnames.slice(1));
 
-      // const { data: foundCountries } = await api.chart.getCountries();
-      // setCountries(foundCountries.result);
+      // Set country and city options
       setCountriesOptions([
         'Spain',
         'Switzerland',
@@ -590,9 +594,6 @@ export function Home() {
         'Philippines',
         'Finland',
       ]);
-
-      // const { data: foundCities } = await api.chart.getCities();
-      // setCities(foundCities.result);
       setCitiesOptions([
         'Las Vegas',
         'Nashua',
@@ -615,58 +616,6 @@ export function Home() {
         'Barcelona',
         'Montreal',
         'Reims',
-        'Koln',
-        'Oulu',
-        'Bergen',
-        'Versailles',
-        'New Haven',
-        'Brickhaven',
-        'Sevilla',
-        'Boston',
-        'South Brisbane',
-        'Helsinki',
-        'Glen Waverly',
-        'Marseille',
-        'Espoo',
-        'North Sydney',
-        'Melbourne',
-        'San Rafael',
-        'Bergamo',
-        'Strasbourg',
-        'Reggio Emilia',
-        'Toulouse',
-        'Charleroi',
-        'Allentown',
-        'Burbank',
-        'Tsawassen',
-        'London',
-        'Stavern',
-        'Philadelphia',
-        'Kobenhavn',
-        'Munich',
-        'Torino',
-        'Graz',
-        'San Diego',
-        'Boras',
-        'Pasadena',
-        'Osaka',
-        'Bridgewater',
-        'Los Angeles',
-        'Madrid',
-        'Minato-ku',
-        'Dublin',
-        'Vancouver',
-        'Makati City',
-        'Lule',
-        'White Plains',
-        'Aaarhus',
-        'Liverpool',
-        'NYC',
-        'Oslo',
-        'Frankfurt',
-        'San Jose',
-        'Cambridge',
-        'Nantes',
       ]);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -679,44 +628,55 @@ export function Home() {
     getData();
   }, [getData]);
 
-  const updateTemporalRange = useCallback((date: string) => {
-    const startDate = DateTime.fromISO(date).startOf('year');
-    const endDate = DateTime.fromISO(date).endOf('year');
-    setTemporalRange([startDate, endDate]);
-  }, []);
+  const updateTemporalRange = useCallback(
+    (date: string) => {
+      const startDate = DateTime.fromISO(date).startOf('year');
+      const endDate = DateTime.fromISO(date).endOf('year');
+      setTemporalRange([startDate, endDate]);
+
+      setSearchParams({
+        ...Object.fromEntries(searchParams.entries()),
+        dateRange: JSON.stringify([startDate, endDate]),
+      });
+    },
+    [searchParams, setSearchParams],
+  );
 
   const handleSelectCities = (value: string) => {
-    const newValues = [...citiesFilter];
+    const newCitiesFilter = citiesFilter.includes(value)
+      ? citiesFilter.filter((city) => city !== value)
+      : [...citiesFilter, value];
+    setCitiesFilter(newCitiesFilter);
 
-    const index = newValues.indexOf(value);
-    if (index === -1) {
-      newValues.push(value);
-    } else {
-      newValues.splice(index, 1);
-    }
-
-    setCitiesFilter(newValues);
+    setSearchParams({
+      ...Object.fromEntries(searchParams.entries()),
+      cities: JSON.stringify(newCitiesFilter),
+    });
   };
 
   const handleSelectCountries = (value: string) => {
-    const newValues = [...countriesFilter];
+    const newCountriesFilter = countriesFilter.includes(value)
+      ? countriesFilter.filter((country) => country !== value)
+      : [...countriesFilter, value];
+    setCountriesFilter(newCountriesFilter);
 
-    const index = newValues.indexOf(value);
-    if (index === -1) {
-      newValues.push(value);
-    } else {
-      newValues.splice(index, 1);
-    }
-
-    setCountriesFilter(newValues);
+    setSearchParams({
+      ...Object.fromEntries(searchParams.entries()),
+      countries: JSON.stringify(newCountriesFilter),
+    });
   };
 
   const handleCleanFilters = () => {
     setCitiesFilter([]);
     setCountriesFilter([]);
+    setSearchParams({
+      ...Object.fromEntries(searchParams.entries()),
+      cities: '[]',
+      countries: '[]',
+    });
   };
 
-  const [isSheetOpen, setSheetOpen] = useState<boolean>();
+  const [isSheetOpen, setSheetOpen] = useState<boolean>(false);
 
   return (
     <div className="p-4">
@@ -783,7 +743,6 @@ export function Home() {
                       </Command>
                     </PopoverContent>
                   </Popover>
-
                   <div className="flex gap-2 overflow-x-auto">
                     {countriesFilter.map((c, index) => {
                       const bgColor = COLORS[index % COLORS.length];
@@ -801,7 +760,6 @@ export function Home() {
                     })}
                   </div>
                 </div>
-
                 <div className=" px-4 flex flex-col gap-2">
                   <div>City</div>
                   <Popover>
@@ -827,7 +785,6 @@ export function Home() {
                       </Command>
                     </PopoverContent>
                   </Popover>
-
                   <div className="flex gap-2 overflow-x-auto">
                     {citiesFilter.map((c, index) => {
                       const bgColor = COLORS[index % COLORS.length];
