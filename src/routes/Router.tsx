@@ -1,7 +1,7 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { Home } from "../pages/private/Home";
-import PrivateRoute from "./PrivateRoute";
-import { SignIn } from "../pages/public/SignIn";
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { Home } from '../pages/private/Home';
+import PrivateRoute from './PrivateRoute';
+import { SignIn } from '../pages/public/SignIn';
 
 type RouteNode = {
   path: string;
@@ -12,8 +12,8 @@ type RouteNode = {
 const createRoutes = <T extends Record<string, RouteNode>>(r: T) => r;
 
 export const routes = createRoutes({
-  home: { path: "/" },
-  signIn: { path: "/login" },
+  home: { path: '/' },
+  signIn: { path: '/login' },
 });
 
 export const Router = () => {

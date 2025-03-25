@@ -1,7 +1,7 @@
-import { Navigate, Outlet } from "react-router-dom";
-import { routes } from "./Router";
-import { useAuth } from "../hooks/useAuth";
-import { HeaderMenu } from "../components/header-menu";
+import { Navigate, Outlet } from 'react-router-dom';
+import { routes } from './Router';
+import { useAuth } from '../hooks/useAuth';
+import { Menu } from '../components/menu';
 
 const PrivateRoute = () => {
   const { token } = useAuth();
@@ -11,9 +11,11 @@ const PrivateRoute = () => {
   }
 
   return (
-    <div className="w-[100%]">
-      <HeaderMenu />
-      <Outlet />
+    <div className="flex">
+      <Menu />
+      <div className="w-[100%]">
+        <Outlet />
+      </div>
     </div>
   );
 };

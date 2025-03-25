@@ -6,7 +6,7 @@ interface DataSource {
 interface Filter {
   col: string;
   op: string;
-  val: string;
+  val: string | string[];
 }
 
 interface Extras {

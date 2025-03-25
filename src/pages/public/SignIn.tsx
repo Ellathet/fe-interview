@@ -1,22 +1,22 @@
-import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { z } from "zod";
-import { useAuth } from "../../hooks/useAuth";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { Input } from "../../components/ui/input";
-import { Button } from "../../components/ui/button";
-import { LoaderCircle } from "lucide-react";
-import { PasswordInput } from "../../components/password-input";
-import { routes } from "../../routes/Router";
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { z } from 'zod';
+import { useAuth } from '../../hooks/useAuth';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { Input } from '../../components/ui/input';
+import { Button } from '../../components/ui/button';
+import { LoaderCircle } from 'lucide-react';
+import { PasswordInput } from '../../components/password-input';
+import { routes } from '../../routes/Router';
 
 const signInSchema = z.object({
   username: z.string({
-    required_error: "You need input a username.",
+    required_error: 'You need input a username.',
   }),
   password: z.string({
-    required_error: "You need input a password.",
+    required_error: 'You need input a password.',
   }),
 });
 
@@ -52,13 +52,13 @@ export const SignIn = () => {
           password: data.password,
         });
       } catch (error) {
-        toast.error("Senha ou e-mail inválido");
+        toast.error('Senha ou e-mail inválido');
         setLoading(false);
       } finally {
         setLoading(false);
       }
     },
-    [login]
+    [login],
   );
 
   return (
@@ -71,7 +71,7 @@ export const SignIn = () => {
         >
           <span className="font-medium">Username</span>
           <Input
-            {...register("username")}
+            {...register('username')}
             placeholder="your_username"
             autoComplete="username"
           />
@@ -82,7 +82,7 @@ export const SignIn = () => {
           )}
           <span className="font-medium">Password</span>
           <PasswordInput
-            {...register("password")}
+            {...register('password')}
             placeholder="Your password"
             autoComplete="current-password"
           />
@@ -99,7 +99,7 @@ export const SignIn = () => {
             {isLoading ? (
               <LoaderCircle className="rotate w-4 h-4" />
             ) : (
-              "Sign In"
+              'Sign In'
             )}
           </Button>
         </form>
