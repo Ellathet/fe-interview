@@ -69,3 +69,13 @@ Ensure you have the following installed:
    # or
    npm run preview
    ```
+
+## Disclaimer
+The initial approach was to use `datasource` routes to fetch filter options but, CORS issues were encountered when attempting to bring the data from the endpoints:
+
+- `http://3.136.147.85:8088/api/v1/datasource/table/10/column/city/value`
+
+- `http://3.136.147.85:8088/api/v1/datasource/table/10/column/country/values/`
+
+Some solutions were attempted, including using a CORS browser extension and setting up a proxy in the application. However, the issue likely originates from the API itself. 
+As a workaround, mocked data was used for the city, country, and year filters.
