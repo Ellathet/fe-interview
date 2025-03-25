@@ -1,13 +1,13 @@
-import { LogOut } from "lucide-react";
+import { LogOut } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "./ui/avatar";
-import { useAuth } from "../hooks/useAuth";
+} from './ui/dropdown-menu';
+import { Avatar, AvatarFallback } from './ui/avatar';
+import { useAuth } from '../hooks/useAuth';
 
 export const HeaderMenu = () => {
   const { logout } = useAuth();
